@@ -1,11 +1,6 @@
 services:
   termix:
-    # Default: pull prebuilt image.
-    # To rebuild from local source instead, run: docker compose up --build
     image: ghcr.io/lukegus/termix:latest
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
     container_name: termix
     restart: unless-stopped
     ports:
@@ -17,19 +12,15 @@ services:
       GUACD_HOST: "guacd"
     depends_on:
       - guacd
-    networks:
-      - termix-net
 
   guacd:
     image: guacamole/guacd:1.6.0
-    container_name: guacd
+    container_name: termix-guacd
     restart: unless-stopped
-    # Dev deploy: expose guacd on host port 4823 instead of default 4822
     ports:
-      - "4823:4822"
-    networks:
-      - termix-net
+      - "4822:4822"
 
 networks:
-  termix-net:
-    driver: bridge
+  default:
+    external: true
+    name: nginx-proxy
